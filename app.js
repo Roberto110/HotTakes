@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config()
 
+const userRoutes = require('./routes/user');
+
 const app = express();
 app.use(express.json());
 
@@ -11,7 +13,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@ho
     }).catch((error) => {
         console.log('Can\'t connect to database.');
         console.log(error);
-    })
+    });
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,8 +22,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res) => {
-    res.json({ message: 'Your request was successful!' });
-});
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
