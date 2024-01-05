@@ -42,7 +42,7 @@ exports.login = (req, res, next) => {
                         });
                     }
                     const token = jwt.sign({ userId: user._id },
-                        'iCNgITvc2x4i1HRsbfeI5oV7sxXNeZ24a54rDYihvz4P7ZvvGFOVwBKNh91dE5Dp',
+                        "iCNgITvc2x4i1HRsbfeI5oV7sxXNeZ24a54rDYihvz4P7ZvvGFOVwBKNh91dE5Dp",
                         { expiresIn: '24h' });
                     res.status(200).json({
                         userId: user._id,
