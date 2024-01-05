@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
         (user) => {
             if (!user) {
                 return res.status(401).json({
-                    error: error
+                    error: new Error('User not found!')
                 });
             }
             bcrypt.compare(req.body.password, user.password).then(
