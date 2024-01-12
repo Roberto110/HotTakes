@@ -42,7 +42,9 @@ exports.postSauce = (req, res, next) => {
         mainPepper: req.body.sauce.mainPepper,
         imageUrl: url + '/images/' + req.file.filename,
         heat: req.body.sauce.heat,
-        userId: req.body.sauce.userId
+        userId: req.body.sauce.userId,
+        likes: 0,
+        dislikes: 0
     });
     sauce.save().then(() => {
         res.status(201).json({
@@ -122,7 +124,84 @@ exports.deleteSauce = (req, res, next) => {
     );
 };
 
-// exports.rateSauce = (req, res, next) => {
+exports.rateSauce = (req, res, next) => {
+    Sauce.findOne({ _id: req.params.id }).then( // Finds the correctsauce in the database
+        (sauce) => {
+            if (sauce.usersLiked.find((userId) => userId == req.body.userId) || sauce.usersDisliked.find((userId) => userId == req.body.userId)) { // Checks to see if the user has already rated the sauce
+                console.log("User has rated this sauce already.")
+                if (sauce.usersLiked.find((userId) => userId == req.body.userId) && req.body.like == 0) { // removes like
+                    console.log("Removing like.")
+                    Sauce.updateOne(
+                        { _id: req.params.id },
+                        { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId } }
+                    ).then(() => {
+                        res.status(201).json({
+                            message: 'Like removed: ' + sauce.likes
+                        });
+                    }).catch(
+                        (error) => {
+                            res.status(401).json({
+                                error: error
+                            })
+                        }
+                    )
+                }
+                if (sauce.usersDisliked.find((userId) => userId == req.body.userId) && req.body.like == 0) { // removes dislike
+                    console.log("Removing dislike.")
+                    Sauce.updateOne(
+                        { _id: req.params.id },
+                        { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId } }
+                    ).then(() => {
+                        res.status(201).json({
+                            message: 'Dislike removed: ' + sauce.dislikes
+                        });
+                    }).catch(
+                        (error) => {
+                            res.status(401).json({
+                                error: error
+                            })
+                        }
+                    )
+                }
+            } else { //if the user hasnt rated the sauce before
+                console.log('User has not rated this sauce before.')
+                if (req.body.like == 1) { // Likes the sauce 
+                    console.log('Sauce liked.')
+                    Sauce.updateOne(
+                        { _id: req.params.id },
+                        { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId } }
+                    ).then(() => {
+                        res.status(201).json({
+                            message: 'Sauce liked: ' + sauce.likes
+                        })
+                    }).catch(
+                        (error) => {
+                            res.status(401).json({
+                                error: error
+                            })
+                        }
+                    )
+                }
 
-// };
+                if (req.body.like == -1) { //dislikes the sauce
+                    console.log('Sauce disliked.')
+                    Sauce.updateOne(
+                        { _id: req.params.id },
+                        { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId } }
+                    ).then(() => {
+                        res.status(201).json({
+                            message: 'Sauce disliked: ' + sauce.dislikes
+                        })
+                    }).catch(
+                        (error) => {
+                            res.status(401).json({
+                                error: error
+                            })
+                        }
+                    )
+                }
+            }
+        }
+    )
+};
 
