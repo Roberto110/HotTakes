@@ -6,14 +6,14 @@ const MIME_TYPES = {
     'image/png': 'png'
 };
 
-const storage = multer.diskStorage({
+const storage = multer.diskStorage({ // tells multer where to save incoming files
     destination: (req, file, callback) => {
-        callback(null, 'images');
+        callback(null, 'images'); // tells multer to save incoming files to the 'images' folder
     },
     filename: (req, file, callback) => {
-        const name = file.originalname.split(' ').join('_');
-        const extension = MIME_TYPES[file.mimetype];
-        callback(null, name + Date.now() + '.' + extension);
+        const name = file.originalname.split(' ').join('_'); //tells  multer  to use the original name, replacing any spaces with underscores
+        const extension = MIME_TYPES[file.mimetype]; //uses the MIME type map constant to resolve the appropriate file extension.
+        callback(null, name + Date.now() + '.' + extension); //adds together name, a  Date.now()  timestamp, and the file extension
     }
 });
 

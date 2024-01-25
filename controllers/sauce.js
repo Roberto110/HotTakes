@@ -1,5 +1,4 @@
 const Sauce = require('../models/sauce');
-const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
 exports.getAllSauces = (req, res, next) => {
@@ -61,7 +60,7 @@ exports.postSauce = (req, res, next) => {
 
 exports.modifySauce = (req, res, next) => {
     let sauce = new Sauce({ _id: req.params._id });
-    if (req.file) {
+    if (req.file) { // if new file is uploaded
         const url = req.protocol + '://' + req.get('host');
         req.body.sauce = JSON.parse(req.body.sauce);
         sauce = {
@@ -74,7 +73,7 @@ exports.modifySauce = (req, res, next) => {
             heat: req.body.sauce.heat,
             userId: req.body.sauce.userId
         };
-    } else {
+    } else { // if new file is not uploaded
         sauce = {
             _id: req.params.id,
             name: req.body.name,
